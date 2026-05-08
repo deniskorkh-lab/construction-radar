@@ -1,0 +1,37 @@
+name: Daily Construction Radar
+
+on:
+  schedule:
+    - cron: '0 9 * * *'  # 09:00 UTC = 12:00 МСК
+  workflow_dispatch:      # Позволяет запускать вручную
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run radar script
+        run: python main.py
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+
+      - name: Save state to repo
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add seen_ids.json
+          git commit -m "Update seen projects" || echo "No changes"
+          git push
