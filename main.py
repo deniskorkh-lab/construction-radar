@@ -63,7 +63,7 @@ def fetch_projects():
                 match = re.search(r'window\.__INITIAL_STATE__\s*=\s*({.*?});', resp.text, re.DOTALL)
                 if match:
                     data = json.loads(match.group(1))
-import os
+import os 
 import json
 import hashlib
 import time
