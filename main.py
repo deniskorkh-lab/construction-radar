@@ -65,7 +65,7 @@ def fetch_projects():
                 continue
             resp.raise_for_status()
             ct = resp.headers.get("Content-Type", "")
-            if "json" in ct:
+            if "application/json" in ct:
                 data = resp.json()
             else:
                 match = re.search(r'window\.__INITIAL_STATE__\s*=\s*({.*?});', resp.text, re.DOTALL)
@@ -77,11 +77,13 @@ def fetch_projects():
             print(f"Ошибка запроса: {e}")
             time.sleep(5)
 
-    if not data:
+    if not 
         print("Не удалось получить данные с ЕИС")
         return []
 
-    items = data.get("data", []) or data.get("orderList", {}).get("orders", [])
+    items = data.get("data", [])
+    if not items:
+        items = data.get("orderList", {}).get("orders", [])
     if not items:
         print("Объектов не найдено.")
         return []
@@ -93,8 +95,10 @@ def fetch_projects():
     for item in items:
         date_str = (item.get("publishDate") or item.get("regDate") or "")[:10]
         try:
-            if date_str and datetime.strptime(date_str, "%Y-%m-%d") > horizon:
-                continue
+            if date_str:
+                pub_date = datetime.strptime(date_str, "%Y-%m-%d")
+                if pub_date > horizon:
+                    continue
         except:
             pass
 
