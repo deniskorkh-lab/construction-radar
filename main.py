@@ -71,13 +71,13 @@ def fetch_projects():
                 match = re.search(r'window\.__INITIAL_STATE__\s*=\s*({.*?});', resp.text, re.DOTALL)
                 if match:
                     data = json.loads(match.group(1))
-            if 
+            if data:
                 break
         except Exception as e:
             print(f"Ошибка запроса: {e}")
             time.sleep(5)
 
-    if not 
+    if not data:
         print("Не удалось получить данные с ЕИС")
         return []
 
